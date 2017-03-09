@@ -9,7 +9,7 @@ public class BitSetExample {
     // 00010100010001001... &
 
     // &, |, ~, <<, >>: Java bit operations
-    // bit set
+
     private final byte[] bitSet;
     private final int cardinal;
 
