@@ -2,7 +2,7 @@ package BitSet;
 
 import java.util.*;
 
-public class BitSetExample {
+public class BitSetExample implements Iterable<Integer> {
     // 10010100010001001101000
     // 01110111011001011010000
 
@@ -28,7 +28,6 @@ public class BitSetExample {
             if (this.cardinal != other.cardinal) return false;
             for (int i = 0; i < this.bitSet.length; i++) {
                 if (this.bitSet[i] != other.bitSet[i]) return false;
-                else continue;
             }
             return true;
         }
@@ -36,8 +35,21 @@ public class BitSetExample {
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < this.cardinal; i++) {
+            sb.append(i);
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
     public int hashCode() {
-        return bitSet.hashCode() + cardinal;
+        return Arrays.hashCode(bitSet) + cardinal;
     }
 
     public int getCardinal() {
@@ -46,45 +58,36 @@ public class BitSetExample {
 
     public boolean check(int element) {
         if (element < 0 && element >= cardinal) throw new IndexOutOfBoundsException();
-        else {
-            int indexOfBitSet = element / 8;
-            byte numb = bitSet[indexOfBitSet];
-            return ((numb >> (8 * (indexOfBitSet + 1) - element - 1)) & 1) == 1;
-        }
+
+        int indexOfBitSet = element / 8;
+        byte numb = bitSet[indexOfBitSet];
+        return ((numb >> (8 * (indexOfBitSet + 1) - element - 1)) & 1) == 1;
     }
 
     public BitSetExample union(BitSetExample other) {
-        int dist1 = this.cardinal - other.cardinal;
-        BitSetExample set1 = (dist1 >= 0) ? this : other;
-        BitSetExample set2 = (dist1 >= 0) ? other : this;
-        BitSetExample result = new BitSetExample(Math.max(this.cardinal, other.cardinal));
-        int distance = set1.bitSet.length - set2.bitSet.length;
-        for (int i = 0; i < set1.bitSet.length; i++) {
-            if (distance > 0 && i < distance)
-                result.bitSet[i] = set1.bitSet[i];
-            else
-                result.bitSet[i] = (byte) (set1.bitSet[i] | set2.bitSet[i - distance]);
+        if (this.cardinal != other.cardinal) throw new NullPointerException();
+
+        for (int i = 0; i < this.bitSet.length; i++) {
+            this.bitSet[i] = (byte) (this.bitSet[i] | other.bitSet[i]);
         }
-        return result;
+        return this;
     }
 
     public BitSetExample intersection(BitSetExample other) {
-        int dist1 = this.cardinal - other.cardinal;
-        BitSetExample set1 = (dist1 > 0) ? this : other;
-        BitSetExample set2 = (dist1 < 0) ? this : other;
-        BitSetExample result = new BitSetExample(Math.min(this.cardinal, other.cardinal));
-        int distance = set1.bitSet.length - set2.bitSet.length;
-        for (int i = 0; i < set2.bitSet.length; i++) {
-            result.bitSet[i] = (byte) (set1.bitSet[i + distance] & set2.bitSet[i]);
+        if (this.cardinal != other.cardinal) throw new NullPointerException();
+
+        for (int i = 0; i < this.bitSet.length; i++) {
+            this.bitSet[i] = (byte) (this.bitSet[i] & other.bitSet[i]);
         }
-        return result;
+        return this;
     }
 
     public BitSetExample complement() {
-        for (int i = 0; i < bitSet.length; i++) {
-            this.bitSet[i] = (byte) ~this.bitSet[i];
+        BitSetExample result = new BitSetExample(this.cardinal);
+        for (int i = 0; i < this.cardinal; i++) {
+            if (!check(i)) result.addElement(i);
         }
-        return this;
+        return result;
     }
 
     public boolean addElement(int element) {
@@ -131,4 +134,38 @@ public class BitSetExample {
         return result;
     }
 
+    // Бонус
+    @Override
+    public Iterator<Integer> iterator() {
+        return new BitSetIterator();
+    }
+
+    private class BitSetIterator implements Iterator<Integer> {
+        private int cursor;
+
+        public BitSetIterator() {
+            cursor = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            for (int i = cursor; i < BitSetExample.this.cardinal; i++) {
+                if (BitSetExample.this.check(i)) {
+                    return true;
+                }
+                cursor++;
+            }
+            return false;
+        }
+
+        @Override
+        public Integer next() {
+            if (this.hasNext()) {
+                int current = cursor;
+                cursor++;
+                return current;
+            }
+            throw new NoSuchElementException();
+        }
+    }
 }

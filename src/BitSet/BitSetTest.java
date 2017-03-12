@@ -1,6 +1,5 @@
 package BitSet;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.ByteListImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -11,7 +10,7 @@ class BitSetTest {
     final int cardinal = 17;
     BitSetExample bitSet = new BitSetExample(cardinal);
     final int newCardinal = 5;
-    BitSetExample newBitSet = new BitSetExample(newCardinal);
+    BitSetExample newBitSet = new BitSetExample(cardinal);
 
     @Test
     public void getCardinal() {
@@ -43,17 +42,9 @@ class BitSetTest {
 
     @Test
     public void intersection() {
-        BitSetExample result = new BitSetExample(newCardinal);  //            00000
         for (int i = 0; i < cardinal; i++) {
             if (i < 10) bitSet.addElement(i);                   //11111111110000000
-            if (i < 5) newBitSet.addElement(i);                 //            11111
-        }
-
-        assertEquals(result, bitSet.intersection(newBitSet));
-
-        for (int i = 0; i < cardinal; i++) {
-            if (i % 2 == 0) bitSet.addElement(i);               //10101010101010101
-            if (i % 2 == 0 && i < newCardinal) newBitSet.addElement(i); //    10101
+            if (i < 5) newBitSet.addElement(i);                 //11111000000000000
         }
 
         assertEquals(newBitSet, bitSet.intersection(newBitSet));
@@ -102,6 +93,22 @@ class BitSetTest {
         bitSet.addElement(5);
         bitSet.addElement(7);
         assertEquals(2, bitSet.removeMassive(new int[]{7, 5, 2, 3}));
+    }
+
+    @Test
+    public void iterator() {
+        int cursor = 0;
+        BitSetExample ex1 = new BitSetExample(10);
+        for (int i = 0; i < ex1.getCardinal(); i++) {
+            if (i % 2 == 0) ex1.addElement(i);
+        }
+
+        Iterator it = ex1.iterator();
+
+        while (it.hasNext()) {
+            assertEquals(cursor, it.next());
+            cursor += 2;
+        }
     }
 
 }
