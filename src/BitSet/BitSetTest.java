@@ -52,14 +52,17 @@ class BitSetTest {
 
     @Test
     public void complement() {
-        BitSetExample newBitSet = new BitSetExample(cardinal);
+        BitSetExample result = new BitSetExample(cardinal);
         for (int i = 0; i < cardinal; i++) {
-            if (i > 10) {
+            if (i > 10)
                 bitSet.addElement(i);
-            } else newBitSet.addElement(i);
+            if (i < 12)
+                newBitSet.addElement(i);
+            if (i != 11)
+                result.addElement(i);
         }
 
-        assertEquals(newBitSet, bitSet.complement());
+        assertEquals(result, bitSet.complement(newBitSet));
     }
 
     @Test

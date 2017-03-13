@@ -37,13 +37,14 @@ public class BitSetExample implements Iterable<Integer> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("{");
         for (int i = 0; i < this.cardinal; i++) {
-            sb.append(i);
-            sb.append(",");
+            if (this.check(i)) {
+                sb.append(i).append(", ");
+            }
         }
         sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
+        sb.append("}");
         return sb.toString();
     }
 
@@ -82,12 +83,13 @@ public class BitSetExample implements Iterable<Integer> {
         return this;
     }
 
-    public BitSetExample complement() {
-        BitSetExample result = new BitSetExample(this.cardinal);
-        for (int i = 0; i < this.cardinal; i++) {
-            if (!check(i)) result.addElement(i);
+    public BitSetExample complement(BitSetExample other) {
+        if (this.cardinal != other.cardinal) throw new NullPointerException();
+
+        for (int i = 0; i < this.bitSet.length; i++) {
+            this.bitSet[i] = (byte) (this.bitSet[i] ^ other.bitSet[i]);
         }
-        return result;
+        return this;
     }
 
     public boolean addElement(int element) {
@@ -115,10 +117,8 @@ public class BitSetExample implements Iterable<Integer> {
     public int addMassive(int[] elements) {
         int result = 0;
         for (int element : elements) {
-            if (!check(element)) {
-                addElement(element);
+            if (addElement(element))
                 result++;
-            }
         }
         return result;
     }
@@ -126,10 +126,8 @@ public class BitSetExample implements Iterable<Integer> {
     public int removeMassive(int[] elements) {
         int result = 0;
         for (int element : elements) {
-            if (check(element)) {
-                removeElement(element);
+            if (removeElement(element))
                 result++;
-            }
         }
         return result;
     }
