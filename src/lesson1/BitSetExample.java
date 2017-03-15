@@ -1,4 +1,4 @@
-package BitSet;
+package lesson1;
 
 import java.util.*;
 
@@ -40,10 +40,10 @@ public class BitSetExample implements Iterable<Integer> {
         sb.append("{");
         for (int i = 0; i < this.cardinal; i++) {
             if (this.check(i)) {
-                sb.append(i).append(", ");
+                if (i == cardinal - 1) sb.append(i);
+                else sb.append(i).append(", ");
             }
         }
-        sb.deleteCharAt(sb.length() - 1);
         sb.append("}");
         return sb.toString();
     }
@@ -83,11 +83,15 @@ public class BitSetExample implements Iterable<Integer> {
         return this;
     }
 
-    public BitSetExample complement(BitSetExample other) {
-        if (this.cardinal != other.cardinal) throw new NullPointerException();
-
+    public BitSetExample complement() {
         for (int i = 0; i < this.bitSet.length; i++) {
-            this.bitSet[i] = (byte) (this.bitSet[i] ^ other.bitSet[i]);
+            if(cardinal % 8 == 0) this.bitSet[i] = (byte) ~this.bitSet[i];
+            else {
+                if (i == this.bitSet.length - 1) {
+                    this.bitSet[i] = (byte) (~ (this.bitSet[i] >> 8 - this.cardinal % 8));
+                }
+                else this.bitSet[i] = (byte) ~this.bitSet[i];
+            }
         }
         return this;
     }
