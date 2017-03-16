@@ -40,10 +40,10 @@ public class BitSetExample implements Iterable<Integer> {
         sb.append("{");
         for (int i = 0; i < this.cardinal; i++) {
             if (this.check(i)) {
-                if (i == cardinal - 1) sb.append(i);
-                else sb.append(i).append(", ");
+                 sb.append(i).append(", ");
             }
         }
+        sb.delete(sb.length() - 2, sb.length());
         sb.append("}");
         return sb.toString();
     }
@@ -85,12 +85,12 @@ public class BitSetExample implements Iterable<Integer> {
 
     public BitSetExample complement() {
         for (int i = 0; i < this.bitSet.length; i++) {
-            if(cardinal % 8 == 0) this.bitSet[i] = (byte) ~this.bitSet[i];
+            if (cardinal % 8 == 0) this.bitSet[i] = (byte) ~this.bitSet[i];
             else {
+                int numb = 8 - this.cardinal % 8;
                 if (i == this.bitSet.length - 1) {
-                    this.bitSet[i] = (byte) (~ (this.bitSet[i] >> 8 - this.cardinal % 8));
-                }
-                else this.bitSet[i] = (byte) ~this.bitSet[i];
+                    this.bitSet[i] = (byte) (((~this.bitSet[i]) >> numb) << numb);
+                } else this.bitSet[i] = (byte) ~this.bitSet[i];
             }
         }
         return this;
